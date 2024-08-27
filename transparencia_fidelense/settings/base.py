@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django_middleware_global_request.middleware.GlobalRequestMiddleware',
 ]
 
-ROOT_URLCONF = 'sistema_base_r2.urls'
+ROOT_URLCONF = 'transparencia_fidelense.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +67,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'sistema_base_r2.wsgi.application'
+WSGI_APPLICATION = 'transparencia_fidelense.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -111,13 +111,13 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)
-    "site_title": "Sistema Base",
+    "site_title": "Transparência Fidelense",
 
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_header": "Sistema Base",
+    "site_header": "Transparência Fidelense",
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_brand": "Sistema Base",
+    "site_brand": "Transparência Fidelense",
 
     # Logo to use for your site, must be present in static files, used for brand on top left
     "site_logo": "img/logo/logo.jpeg",
@@ -261,3 +261,5 @@ MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 DEFAULT_PASSWORD = '1'
 
 REMETENTE_EMAILS = 'contato@teste.com'
+
+IP_PREFEITURA = 'http://187.19.49.2:8079/'
