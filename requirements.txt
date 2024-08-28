@@ -12,6 +12,8 @@ django-middleware-global-request==0.3.1
 # django-fixture-magic
 whitenoise
 psycopg2
+ipython
+tqdm
 # Para criar admins de configurações que só pode ter um objeto por classe
 #django-solo==2.0.0
 #
