@@ -14,6 +14,8 @@ whitenoise
 psycopg2
 ipython
 tqdm
+django-ajax-selects
+python-dateutil
 # Para criar admins de configurações que só pode ter um objeto por classe
 #django-solo==2.0.0
 #

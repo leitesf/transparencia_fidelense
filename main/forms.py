@@ -1,6 +1,6 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, Form, ModelChoiceField, ValidationError
 
-from main.models import Usuario
+from main.models import Usuario, Folha
 from transparencia_fidelense import settings
 
 
@@ -19,3 +19,13 @@ class UsuarioForm(ModelForm):
         if commit:
             user.save()
         return user
+    
+
+class RelatorioGastosForm(Form):
+    folha_inicial = ModelChoiceField(queryset=Folha.objects, label='Folha Inicial')
+    folha_final = ModelChoiceField(queryset=Folha.objects, label='Folha Final')
+
+    def clean_folha_final(self):
+        if self.cleaned_data['folha_inicial'].ordenacao > self.cleaned_data['folha_final'].ordenacao:
+            raise ValidationError(u'A data final deve ser mais recente que a folha inicial.')
+        return self.cleaned_data['folha_final']

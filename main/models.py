@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Sum
 
 
 class Usuario(AbstractUser):
@@ -35,6 +36,14 @@ class Folha(models.Model):
 
     def get_absolute_url(self):
         return '/folha/{}/'.format(self.id)
+    
+    def get_quantidade_e_valor_por_categoria_pra_csv(self):
+        retorno = []
+        retorno.append(self)
+        for categoria in CategoriaFuncional.objects.all():
+            retorno.append(self.pagamento_set.filter(categoria=categoria).count())
+            retorno.append(self.pagamento_set.filter(categoria=categoria).aggregate(Sum("remuneracao"))['remuneracao__sum'])
+        return retorno
     
 
 class Pessoa(models.Model):
@@ -231,7 +240,7 @@ class Pagamento(models.Model):
         ordering = ['-folha__ordenacao', 'contrato__pessoa__nome']
 
     def __str__(self):
-        return '%s (%s)'.format(self.contrato.pessoa, self.folha)
+        return '{} ({})'.format(self.contrato.pessoa, self.folha)
 
     def get_edit_url(self):
         return '/admin/main/pagamento/{}/change/'.format(self.id)
