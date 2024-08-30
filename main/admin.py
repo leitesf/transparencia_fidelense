@@ -1,4 +1,6 @@
+import csv
 from django.contrib import admin
+from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from django_bootstrap_icons.templatetags.bootstrap_icons import bs_icon
 
@@ -24,6 +26,20 @@ class AdminBasico(admin.ModelAdmin):
         if 'delete_selected' in actions:
             del actions['delete_selected']
         return actions
+    
+    def export_as_csv(self, request, queryset):
+        meta = self.model._meta
+        field_names = [field.name for field in meta.fields]
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+        writer = csv.writer(response)
+
+        writer.writerow(field_names)
+        for obj in queryset:
+            row = writer.writerow([getattr(obj, field) for field in field_names])
+
+        return response
 
 
 class UsuarioAdmin(admin.ModelAdmin):
@@ -72,13 +88,57 @@ class PagamentoAdmin(AdminBasico):
         ('tipo_vinculo', admin.RelatedOnlyFieldListFilter),
         ('subdivisao', admin.RelatedOnlyFieldListFilter),
         ('local_trabalho', admin.RelatedOnlyFieldListFilter),
+        ('data_admissao', admin.DateFieldListFilter)
     )
     list_display_links = None
+    actions = ["export_as_csv"]
 
     def get_pessoa(self, obj):
         return obj.contrato.pessoa
     get_pessoa.short_description='Pessoa'
-    get_pessoa.order_field='contrato__pessoa'
+    get_pessoa.admin_order_field='contrato__pessoa'
+    
+    def export_as_csv(self, request, queryset):
+        meta = self.model._meta
+        field_names = [field.name for field in meta.fields]
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+        writer = csv.writer(response)
+
+        writer.writerow(
+            [
+                'Funcionário', 
+                'Folha', 
+                'Cargo', 
+                'Categoria', 
+                'Tipo de Vínculo', 
+                'Divisão',
+                'Subdivisão',
+                'Local de Trabalho',
+                'Carga Horária',
+                'Remuneração',
+                'Data de Admissão'
+            ]
+        )
+        for obj in queryset:
+            writer.writerow(
+                [
+                    obj.contrato.pessoa,
+                    obj.folha,
+                    obj.cargo,
+                    obj.categoria,
+                    obj.tipo_vinculo,
+                    obj.divisao,
+                    obj.subdivisao,
+                    obj.local_trabalho,
+                    obj.carga_horaria,
+                    obj.remuneracao,
+                    obj.data_admissao
+                ]
+            )
+
+        return response
 
 
 admin.site.register(Usuario, UsuarioAdmin)

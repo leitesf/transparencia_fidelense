@@ -1,12 +1,10 @@
 from datetime import date
-from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 
 from main.forms import RelatorioGastosForm
 from main.models import CategoriaFuncional, Folha
 from main.utils import gerar_menu
 from django.http import HttpResponse
-from django.template import loader, Context
 from dateutil.relativedelta import relativedelta
 import csv
 

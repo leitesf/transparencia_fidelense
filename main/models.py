@@ -212,7 +212,7 @@ class Contrato(models.Model):
         ordering = ['pessoa__nome']
 
     def __str__(self):
-        return '%s - %s'.format(self.pessoa.nome, self.cargo_atual)
+        return '{}'.format(self.pessoa.nome, self.cargo_atual)
 
     def get_edit_url(self):
         return '/admin/main/contrato/{}/change/'.format(self.id)
