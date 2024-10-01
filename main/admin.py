@@ -81,7 +81,7 @@ class PagamentoAdmin(AdminBasico):
         'divisao', 'subdivisao', 'local_trabalho', 'carga_horaria', 'remuneracao',
         'data_admissao'
     )
-    search_fields = ('contrato__pessoa', )
+    search_fields = ('contrato__pessoa__nome', 'cargo__nome')
     list_filter = (
         ('folha', admin.RelatedOnlyFieldListFilter),
         ('categoria', admin.RelatedOnlyFieldListFilter),
