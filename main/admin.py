@@ -4,8 +4,9 @@ from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from django_bootstrap_icons.templatetags.bootstrap_icons import bs_icon
 
+from main.filters import DemitidosEsseAnoFilter, GovernoFilter
 from main.forms import UsuarioForm
-from main.models import Pagamento, Usuario
+from main.models import Contrato, Pagamento, Usuario
 from django.templatetags.static import static
 
 
@@ -88,7 +89,7 @@ class PagamentoAdmin(AdminBasico):
         ('tipo_vinculo', admin.RelatedOnlyFieldListFilter),
         ('subdivisao', admin.RelatedOnlyFieldListFilter),
         ('local_trabalho', admin.RelatedOnlyFieldListFilter),
-        ('data_admissao', admin.DateFieldListFilter)
+        ('data_admissao', admin.DateFieldListFilter),
     )
     list_display_links = None
     actions = ["export_as_csv"]
@@ -141,5 +142,60 @@ class PagamentoAdmin(AdminBasico):
         return response
 
 
+class ContratoAdmin(AdminBasico):
+    list_display = (
+        'pessoa', 'cargo_atual', 'categoria', 'tipo_vinculo_atual', 'data_admissao_atual', 'folha_mais_recente', 
+        'divisao_atual', 'local_trabalho_atual'
+    )
+    search_fields = ('pessoa__nome', 'cargo_atual__nome')
+    list_filter = (
+        ('folha_mais_recente', admin.RelatedOnlyFieldListFilter),
+        ('categoria', admin.RelatedOnlyFieldListFilter),
+        ('tipo_vinculo_atual', admin.RelatedOnlyFieldListFilter),
+        ('local_trabalho_atual', admin.RelatedOnlyFieldListFilter),
+        ('data_admissao_atual', admin.DateFieldListFilter),
+        GovernoFilter,
+        DemitidosEsseAnoFilter
+    )
+    list_display_links = None
+    actions = ["export_as_csv"]
+    
+    def export_as_csv(self, request, queryset):
+        meta = self.model._meta
+        field_names = [field.name for field in meta.fields]
+
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
+        writer = csv.writer(response)
+
+        writer.writerow(
+            [
+                'Funcionário', 
+                'Folha Mais Recente', 
+                'Cargo Atual', 
+                'Categoria', 
+                'Tipo de Vínculo Atual',    
+                'Divisão Atual',
+                'Local de Trabalho Atual',
+                'Data de Admissão Atual'
+            ]
+        )
+        for obj in queryset:
+            writer.writerow(
+                [
+                    obj.pessoa,
+                    obj.folha_mais_recente,
+                    obj.cargo_atual,
+                    obj.categoria,
+                    obj.tipo_vinculo_atual,
+                    obj.divisao_atual,
+                    obj.local_trabalho_atual,
+                    obj.data_admissao_atual
+                ]
+            )
+
+        return response
+
 admin.site.register(Usuario, UsuarioAdmin)
 admin.site.register(Pagamento, PagamentoAdmin)
+admin.site.register(Contrato, ContratoAdmin)
