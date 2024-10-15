@@ -1,4 +1,5 @@
 import csv
+from decimal import Decimal
 from django.contrib import admin
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
@@ -106,6 +107,7 @@ class PagamentoAdmin(AdminBasico):
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename={}.csv'.format(meta)
         writer = csv.writer(response)
+        valor_total = Decimal(0)
 
         writer.writerow(
             [
@@ -123,6 +125,7 @@ class PagamentoAdmin(AdminBasico):
             ]
         )
         for obj in queryset:
+            valor_total += obj.remuneracao
             writer.writerow(
                 [
                     obj.contrato.pessoa,
@@ -138,14 +141,29 @@ class PagamentoAdmin(AdminBasico):
                     obj.data_admissao
                 ]
             )
+        writer.writerow(
+                [
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    valor_total,
+                    ''
+                ]
+            )
 
         return response
 
 
 class ContratoAdmin(AdminBasico):
     list_display = (
-        'pessoa', 'cargo_atual', 'categoria', 'tipo_vinculo_atual', 'data_admissao_atual', 'folha_mais_recente', 
-        'divisao_atual', 'local_trabalho_atual'
+        'pessoa', 'cargo_atual', 'categoria', 'tipo_vinculo_atual', 'data_admissao_atual', 'data_desligamento', 
+        'folha_mais_recente', 'divisao_atual', 'local_trabalho_atual'
     )
     search_fields = ('pessoa__nome', 'cargo_atual__nome')
     list_filter = (
@@ -154,6 +172,7 @@ class ContratoAdmin(AdminBasico):
         ('tipo_vinculo_atual', admin.RelatedOnlyFieldListFilter),
         ('local_trabalho_atual', admin.RelatedOnlyFieldListFilter),
         ('data_admissao_atual', admin.DateFieldListFilter),
+        ("data_desligamento", admin.EmptyFieldListFilter),
         GovernoFilter,
         DemitidosEsseAnoFilter
     )
@@ -177,7 +196,8 @@ class ContratoAdmin(AdminBasico):
                 'Tipo de Vínculo Atual',    
                 'Divisão Atual',
                 'Local de Trabalho Atual',
-                'Data de Admissão Atual'
+                'Data de Admissão Atual',
+                'Data de Desligamento'
             ]
         )
         for obj in queryset:
@@ -190,7 +210,8 @@ class ContratoAdmin(AdminBasico):
                     obj.tipo_vinculo_atual,
                     obj.divisao_atual,
                     obj.local_trabalho_atual,
-                    obj.data_admissao_atual
+                    obj.data_admissao_atual,
+                    obj.data_desligamento
                 ]
             )
 

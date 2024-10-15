@@ -203,6 +203,7 @@ class Contrato(models.Model):
     subdivisao_atual = models.ForeignKey(Subdivisao, on_delete=models.CASCADE)
     local_trabalho_atual = models.ForeignKey(LocalTrabalho, on_delete=models.CASCADE)
     data_admissao_atual = models.DateField("Data de Admissão Atual", null=False, blank=False)
+    data_desligamento = models.DateField("Data de Desligamento", null=True, blank=True)
     folha_mais_recente = models.ForeignKey(Folha, on_delete=models.CASCADE)
     data_atualizacao = models.DateTimeField(auto_now=True)
 

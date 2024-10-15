@@ -68,6 +68,7 @@ class Command(BaseCommand):
                             nome=item['LOCALDETRABALHO']                
                         )[0]
                         data_admissao = datetime.strptime(item["DATAADMISSAO"], '%d/%m/%Y %H:%M:%S').date()
+                        data_desligamento = datetime.strptime(item["DATADESLIGAMENTO"], '%d/%m/%Y %H:%M:%S').date() if item['DATADESLIGAMENTO'] else None
 
                         if Contrato.objects.filter(id_prefeitura = item['ID']):
                             contrato = Contrato.objects.get(id_prefeitura = item['ID'])
@@ -78,6 +79,7 @@ class Command(BaseCommand):
                                 contrato.subdivisao_atual = subdivisao
                                 contrato.local_trabalho_atual = local_trabalho
                                 contrato.data_admissao_atual = data_admissao
+                                contrato.data_desligamento = data_desligamento
                                 contrato.folha_mais_recente = folha
                                 contrato.save()
                         else:
@@ -91,8 +93,8 @@ class Command(BaseCommand):
                                 divisao_atual = divisao,
                                 subdivisao_atual = subdivisao,
                                 local_trabalho_atual = local_trabalho,
-                                data_admissao_atual = data_admissao,
-                                folha_mais_recente = folha
+                                folha_mais_recente = folha, 
+                                data_admissao_atual = data_admissao
                             )[0]
                         if not Pagamento.objects.filter(contrato=contrato, folha=folha).exists():
                             valor_convertido = item['PROVENTOS'].replace(',','.')
